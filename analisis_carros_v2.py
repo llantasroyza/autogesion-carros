@@ -1321,3 +1321,4 @@ else:
                 st.markdown("### Log completo")
                 st.dataframe(df_log, use_container_width=True)
  
+ 
