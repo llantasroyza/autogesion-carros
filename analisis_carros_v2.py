@@ -442,13 +442,18 @@ if not st.session_state["panel"]:
 # ════════════════════════════════
 else:
     if not st.session_state["auth"]:
-        st.markdown('<div style="max-width:400px;margin:3rem auto;text-align:center;padding:3rem;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;"><div style="font-family:\'Bebas Neue\',cursive;font-size:2rem;letter-spacing:3px;margin-bottom:1rem;">🔐 PANEL PRIVADO</div></div>',unsafe_allow_html=True)
+        st.markdown('<div style="max-width:400px;margin:3rem auto;text-align:center;padding:3rem;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;"><div style="font-family:'Bebas Neue',cursive;font-size:2rem;letter-spacing:3px;margin-bottom:1rem;">🔐 PANEL PRIVADO</div><div style="color:#888;font-size:0.85rem;margin-bottom:1.5rem;">Gallery Motors by UR</div></div>',unsafe_allow_html=True)
         _,cp,_=st.columns([1,2,1])
         with cp:
-            pw=st.text_input("Contraseña",type="password")
-            if st.button("Entrar"):
-                st.warning("Por favor usa el nuevo formulario de usuario y contraseña arriba.")
+            pw=st.text_input("Contraseña",type="password",key="login_pw")
+            if st.button("🔑 Entrar",key="login_btn"):
+                if pw==st.secrets.get("panel_password","carros2024"):
+                    st.session_state["auth"]=True
+                    st.rerun()
+                else:
+                    st.error("❌ Contraseña incorrecta")
     else:
+
         # Mostrar info del usuario y rol
         rol_actual = "admin"
         nombre_actual = st.session_state.get("usuario_nombre","")
