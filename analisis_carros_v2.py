@@ -157,6 +157,10 @@ def dias_en_inventario(fecha_entrada):
 def calcular_inventario(df_inv, df_gv, df_ven):
     if df_inv.empty: return df_inv
     df = df_inv.copy()
+    # Remove empty rows
+    df = df[df["ID"].astype(str).str.strip().str.len() > 0]
+    df = df[df["ID"].astype(str).str.lower() != 'none']
+    df = df[df["Vehículo"].astype(str).str.strip().str.len() > 0] if "Vehículo" in df.columns else df
     df["ID"] = df["ID"].astype(str)
 
     # Costos totales
@@ -426,16 +430,26 @@ if not st.session_state["panel"]:
             foto=str(row.get("URL Foto",""))
             foto_html=f'<img src="{foto}" style="width:100%;height:140px;object-fit:cover;border-radius:4px;margin-bottom:0.8rem;">' if foto and foto.startswith("http") else ""
             with cols3[i%3]:
-                st.markdown(f"""<div class="carro-card">
+                _nombre = str(row.get('Vehículo','Sin nombre'))
+                _estado_txt = str(row.get('Estado',''))
+                _año = str(row.get('Año',''))
+                _color = str(row.get('Color',''))
+                _placa = str(row.get('Placa',''))
+                _notas = str(row.get('Notas','') or '')
+                _precio = fmt(row.get('Precio Objetivo (CRC)',0))
+                _sub = ' · '.join(filter(None,[_año,_color,f'Placa: {_placa}' if _placa else '']))
+                _wa_link = link_carro_whatsapp(row)
+                _card_html = f"""<div class="carro-card">
                 {foto_html}
-                <span class="badge badge-{estado.split()[0]}">{row.get('Estado','')}</span>{tags}
-                <div class="carro-nombre">{row.get('Vehículo','Sin nombre')}</div>
-                <div style="color:#888;font-size:0.8rem;margin-bottom:0.6rem;">{row.get('Año','')} {'· '+str(row.get('Color','')) if row.get('Color','') else ''} {'· '+str(row.get('Placa','')) if row.get('Placa','') else ''}</div>
-                <div class="carro-precio">{fmt(row.get('Precio Objetivo (CRC)',0))}</div>
-                <div style="color:#555;font-size:0.75rem;">Precio</div>
-                <div style="color:#888;font-size:0.8rem;margin-top:0.5rem;">{row.get('Notas','') or ''}</div>
-                <a href="{link_carro_whatsapp(row)}" target="_blank" style="display:inline-block;margin-top:0.8rem;background:#25D366;color:white;padding:0.3rem 0.8rem;border-radius:4px;font-size:0.75rem;text-decoration:none;font-weight:600;">📲 Compartir WhatsApp</a>
-                </div>""",unsafe_allow_html=True)
+                <span class="badge badge-{estado.split()[0]}">{_estado_txt}</span>{tags}
+                <div class="carro-nombre">{_nombre}</div>
+                <div style="color:#888;font-size:0.8rem;margin-bottom:0.6rem;">{_sub}</div>
+                <div class="carro-precio">{_precio}</div>
+                <div style="color:#555;font-size:0.75rem;">Precio objetivo</div>
+                <div style="color:#888;font-size:0.8rem;margin-top:0.5rem;">{_notas}</div>
+                <a href="{_wa_link}" target="_blank" style="display:inline-block;margin-top:0.8rem;background:#25D366;color:white;padding:0.3rem 0.8rem;border-radius:4px;font-size:0.75rem;text-decoration:none;font-weight:600;">📲 WhatsApp</a>
+                </div>"""
+                st.markdown(_card_html, unsafe_allow_html=True)
 
 # ════════════════════════════════
 # PANEL PRIVADO
