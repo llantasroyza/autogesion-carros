@@ -1,0 +1,10 @@
+streamlit
+pandas
+gspread
+google-auth
+plotly
+openpyxl
+gspread 
+google-auth 
+plotly 
+openpyxl 
